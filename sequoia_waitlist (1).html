@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sequoia — Grow Through Every Semester</title>
+<meta name="description" content="The study app that grows as you do. Connect your Canvas, tackle what matters most, and watch your Sequoia grow all semester.">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-deep: #2D5016;
+    --green-mid: #4A7C2E;
+    --green-light: #6BAF3D;
+    --green-pale: #E8F0E0;
+    --cream: #FAF6F0;
+    --cream-dark: #F0E8D8;
+    --brown-trunk: #6B4423;
+    --text-dark: #2A2A24;
+    --text-mid: #5C5C52;
+    --text-light: #8A8A7E;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse at 20% 80%, rgba(74,124,46,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(74,124,46,0.04) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(107,175,61,0.03) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 560px;
+    padding: 60px 24px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* Floating particles */
+  .particle {
+    position: fixed;
+    border-radius: 50%;
+    background: var(--green-mid);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+    animation: float linear infinite;
+  }
+  .p1 { width: 4px; height: 4px; left: 12%; top: 20%; animation-duration: 18s; animation-delay: 0s; }
+  .p2 { width: 3px; height: 3px; left: 85%; top: 35%; animation-duration: 22s; animation-delay: 3s; }
+  .p3 { width: 5px; height: 5px; left: 45%; top: 75%; animation-duration: 20s; animation-delay: 6s; }
+  .p4 { width: 3px; height: 3px; left: 70%; top: 60%; animation-duration: 24s; animation-delay: 2s; }
+  .p5 { width: 4px; height: 4px; left: 25%; top: 50%; animation-duration: 19s; animation-delay: 8s; }
+  .p6 { width: 3px; height: 3px; left: 55%; top: 15%; animation-duration: 21s; animation-delay: 5s; }
+
+  @keyframes float {
+    0% { opacity: 0; transform: translateY(0) scale(1); }
+    15% { opacity: 0.15; }
+    50% { opacity: 0.08; transform: translateY(-80px) scale(1.2); }
+    85% { opacity: 0.15; }
+    100% { opacity: 0; transform: translateY(-160px) scale(1); }
+  }
+
+  /* Logo */
+  .logo-wrap {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 32px;
+    animation: logoIn 1s ease both;
+    filter: drop-shadow(0 8px 24px rgba(45,80,22,0.15));
+  }
+  @keyframes logoIn {
+    from { opacity: 0; transform: scale(0.8) translateY(16px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .logo-wrap svg { width: 100%; height: 100%; }
+
+  /* Typography */
+  .brand-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 52px;
+    font-weight: 700;
+    color: var(--green-deep);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    opacity: 0;
+    animation: textUp 0.8s ease 0.2s both;
+  }
+
+  .tagline {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: var(--green-mid);
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: textUp 0.8s ease 0.35s both;
+  }
+
+  .description {
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--text-mid);
+    max-width: 440px;
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: textUp 0.8s ease 0.5s both;
+  }
+
+  @keyframes textUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Email form */
+  .form-wrap {
+    width: 100%;
+    max-width: 420px;
+    opacity: 0;
+    animation: textUp 0.8s ease 0.65s both;
+  }
+
+  .input-group {
+    display: flex;
+    gap: 0;
+    background: white;
+    border-radius: 16px;
+    border: 2px solid var(--green-pale);
+    overflow: hidden;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .input-group:focus-within {
+    border-color: var(--green-mid);
+    box-shadow: 0 4px 20px rgba(74,124,46,0.12);
+  }
+
+  .input-group input {
+    flex: 1;
+    padding: 16px 20px;
+    border: none;
+    outline: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--text-dark);
+    background: transparent;
+  }
+
+  .input-group input::placeholder {
+    color: var(--text-light);
+  }
+
+  .input-group button {
+    padding: 16px 28px;
+    background: var(--green-deep);
+    color: white;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .input-group button:hover {
+    background: var(--green-mid);
+  }
+
+  .form-note {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-top: 12px;
+  }
+
+  /* Success state */
+  .success-msg {
+    display: none;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .success-msg .check {
+    width: 48px;
+    height: 48px;
+    background: var(--green-pale);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    font-size: 22px;
+  }
+
+  .success-msg h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--green-deep);
+    margin-bottom: 6px;
+  }
+
+  .success-msg p {
+    font-size: 15px;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+
+  /* Divider */
+  .divider {
+    width: 40px;
+    height: 2px;
+    background: var(--green-pale);
+    margin: 40px auto;
+    border-radius: 1px;
+    opacity: 0;
+    animation: textUp 0.8s ease 0.8s both;
+  }
+
+  /* Footer */
+  .footer {
+    opacity: 0;
+    animation: textUp 0.8s ease 0.9s both;
+  }
+  .footer p {
+    font-size: 13px;
+    color: var(--text-light);
+    line-height: 1.6;
+  }
+  .footer a {
+    color: var(--green-mid);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .footer a:hover { text-decoration: underline; }
+
+  /* Mobile */
+  @media (max-width: 480px) {
+    .brand-name { font-size: 40px; }
+    .description { font-size: 16px; }
+    .input-group {
+      flex-direction: column;
+      border-radius: 14px;
+    }
+    .input-group input {
+      padding: 14px 16px;
+      text-align: center;
+    }
+    .input-group button {
+      padding: 14px 24px;
+      border-top: 1px solid var(--green-pale);
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="particle p1"></div>
+<div class="particle p2"></div>
+<div class="particle p3"></div>
+<div class="particle p4"></div>
+<div class="particle p5"></div>
+<div class="particle p6"></div>
+
+<div class="page">
+
+  <!-- Logo (icon only, no text) -->
+  <div class="logo-wrap">
+    <svg viewBox="0 0 680 680" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="680" height="680" rx="80" fill="#2D5016"/>
+      <rect x="12" y="12" width="656" height="656" rx="72" fill="none" stroke="#4A7C2E" stroke-width="1" opacity="0.25"/>
+      <circle cx="490" cy="130" r="50" fill="#3A6B1E" opacity="0.12"/>
+      <circle cx="190" cy="530" r="40" fill="#3A6B1E" opacity="0.08"/>
+      <ellipse cx="340" cy="530" rx="130" ry="20" fill="#1A3A0B" opacity="0.4"/>
+      <rect x="324" y="380" width="32" height="130" rx="5" fill="#6B4423"/>
+      <rect x="329" y="390" width="10" height="110" rx="3" fill="#7D5230" opacity="0.45"/>
+      <line x1="324" y1="440" x2="302" y2="418" stroke="#6B4423" stroke-width="7" stroke-linecap="round"/>
+      <line x1="356" y1="415" x2="376" y2="395" stroke="#6B4423" stroke-width="6" stroke-linecap="round"/>
+      <line x1="356" y1="465" x2="377" y2="453" stroke="#5A3A1A" stroke-width="4.5" stroke-linecap="round"/>
+      <ellipse cx="340" cy="240" rx="145" ry="125" fill="#3D8B1E"/>
+      <ellipse cx="340" cy="250" rx="135" ry="115" fill="#4A9C28"/>
+      <ellipse cx="290" cy="190" rx="88" ry="78" fill="#4A9C28"/>
+      <ellipse cx="390" cy="200" rx="82" ry="72" fill="#3D8B1E"/>
+      <ellipse cx="340" cy="165" rx="78" ry="68" fill="#5AAF35"/>
+      <ellipse cx="300" cy="220" rx="68" ry="58" fill="#5AA832"/>
+      <ellipse cx="380" cy="230" rx="62" ry="54" fill="#4A9C28"/>
+      <ellipse cx="340" cy="185" rx="62" ry="52" fill="#6BC23E"/>
+      <ellipse cx="315" cy="155" rx="46" ry="40" fill="#6BC23E"/>
+      <ellipse cx="365" cy="160" rx="44" ry="38" fill="#7DD44F"/>
+      <ellipse cx="340" cy="140" rx="36" ry="30" fill="#7DD44F"/>
+      <ellipse cx="335" cy="128" rx="22" ry="19" fill="#8FE060"/>
+      <circle cx="268" cy="200" r="5.5" fill="#8FE060" opacity="0.45"/>
+      <circle cx="408" cy="220" r="5" fill="#8FE060" opacity="0.35"/>
+      <circle cx="300" cy="255" r="4" fill="#A8F070" opacity="0.3"/>
+      <circle cx="372" cy="185" r="4.5" fill="#FFFDE0" opacity="0.12"/>
+      <circle cx="315" cy="145" r="3.5" fill="#FFFDE0" opacity="0.15"/>
+      <circle cx="360" cy="210" r="3" fill="#FFFDE0" opacity="0.1"/>
+      <ellipse cx="248" cy="295" rx="24" ry="11" fill="#3D8B1E" opacity="0.5"/>
+      <ellipse cx="432" cy="285" rx="22" ry="10" fill="#4A9C28" opacity="0.4"/>
+    </svg>
+  </div>
+
+  <h1 class="brand-name">Sequoia</h1>
+  <p class="tagline">Grow through every semester</p>
+
+  <p class="description">
+    The study app that connects to your Canvas, shows you what actually matters for your grade, and rewards every session with a growing tree.
+  </p>
+
+  <!-- Email signup -->
+  <div class="form-wrap">
+    <div class="input-group" id="formGroup">
+      <input type="email" id="emailInput" placeholder="Enter your email" required>
+      <button id="submitBtn" onclick="handleSubmit()">Join Waitlist</button>
+    </div>
+    <p class="form-note">Be first to try Sequoia. No spam, ever.</p>
+
+    <div class="success-msg" id="successMsg">
+      <div class="check">&#127793;</div>
+      <h3>You're on the list</h3>
+      <p>We'll let you know as soon as Sequoia is ready. Tell a friend who needs this.</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="footer">
+    <p>Built by a student, for students.</p>
+  </div>
+
+</div>
+
+<script>
+function handleSubmit() {
+  const input = document.getElementById('emailInput');
+  const email = input.value.trim();
+
+  if (!email || !email.includes('@') || !email.includes('.')) {
+    input.style.outline = '2px solid #C75B3A';
+    input.style.outlineOffset = '-2px';
+    setTimeout(() => { input.style.outline = 'none'; }, 2000);
+    return;
+  }
+
+  // =====================================================
+  // INTEGRATION POINT:
+  // Replace this section with your email service.
+  //
+  // Options:
+  // 1. Formspree (easiest, free):
+  //    fetch('https://formspree.io/f/YOUR_FORM_ID', {
+  //      method: 'POST',
+  //      headers: { 'Content-Type': 'application/json' },
+  //      body: JSON.stringify({ email: email })
+  //    });
+  //
+  // 2. Mailchimp, ConvertKit, Buttondown, etc.
+  //    Each has its own API endpoint.
+  //
+  // For now, emails are logged to console.
+  // =====================================================
+  console.log('Waitlist signup:', email);
+
+  // Show success
+  document.getElementById('formGroup').style.display = 'none';
+  document.querySelector('.form-note').style.display = 'none';
+  document.getElementById('successMsg').style.display = 'block';
+}
+
+// Enter key submits
+document.getElementById('emailInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') handleSubmit();
+});
+</script>
+
+</body>
+</html>
