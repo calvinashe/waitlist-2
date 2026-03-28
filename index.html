@@ -386,7 +386,16 @@ function handleSubmit() {
   //
   // For now, emails are logged to console.
   // =====================================================
-  console.log('Waitlist signup:', email);
+  fetch('https://api.web3forms.com/submit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    access_key: '6c799ae9-095b-4f96-94b1-cb682fc0fbc6',
+    email: email,
+    subject: 'New Sequoia Waitlist Signup'
+  })
+});
+
 
   // Show success
   document.getElementById('formGroup').style.display = 'none';
